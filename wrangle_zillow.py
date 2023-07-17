@@ -23,11 +23,20 @@ def new_zillow_data():
     conn = get_db_url('zillow')
 
     query = '''
-           SELECT p.bedroomcnt, p.bathroomcnt, p.calculatedfinishedsquarefeet,p.fips, p.yearbuilt, p.taxvaluedollarcnt
-            FROM properties_2017 p
-            JOIN predictions_2017 pr ON p.parcelid = pr.parcelid
-            WHERE p.propertylandusetypeid = 261;
-            '''
+        SELECT *
+    FROM properties_2017 AS p
+    JOIN predictions_2017 AS pr ON p.parcelid = pr.parcelid
+    LEFT JOIN airconditioningtype AS act ON p.airconditioningtypeid = act.airconditioningtypeid
+    LEFT JOIN architecturalstyletype AS ast ON p.architecturalstyletypeid = ast.architecturalstyletypeid
+    LEFT JOIN buildingclasstype AS bct ON p.buildingclasstypeid = bct.buildingclasstypeid
+    LEFT JOIN heatingorsystemtype AS hot ON p.heatingorsystemtypeid = hot.heatingorsystemtypeid
+    LEFT JOIN propertylandusetype AS plt ON p.propertylandusetypeid = plt.propertylandusetypeid
+    LEFT JOIN storytype AS st ON p.storytypeid = st.storytypeid
+    LEFT JOIN typeconstructiontype AS tct ON p.typeconstructiontypeid = tct.typeconstructiontypeid
+    LEFT JOIN unique_properties AS up ON p.parcelid = up.parcelid
+    WHERE p.unitcnt = 1;
+    
+    '''
 
     
     df = pd.read_sql(query, conn)
