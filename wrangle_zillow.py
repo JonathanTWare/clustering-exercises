@@ -33,8 +33,7 @@ def new_zillow_data():
     LEFT JOIN propertylandusetype AS plt ON p.propertylandusetypeid = plt.propertylandusetypeid
     LEFT JOIN storytype AS st ON p.storytypeid = st.storytypeid
     LEFT JOIN typeconstructiontype AS tct ON p.typeconstructiontypeid = tct.typeconstructiontypeid
-    LEFT JOIN unique_properties AS up ON p.parcelid = up.parcelid
-    WHERE p.unitcnt = 1;
+    LEFT JOIN unique_properties AS up ON p.parcelid = up.parcelid;
     
     '''
 
@@ -56,10 +55,7 @@ def get_zillow_data():
         
     return df
 
-
-
-def prep_zillow_data(df):
-    def handle_missing_values(df, prop_required_column=0.5, prop_required_row=0.5):
+def handle_missing_values(df, prop_required_column=0.5, prop_required_row=0.5):
         """
         Drops columns and rows from a DataFrame based on the percentage of missing values.
 
@@ -80,7 +76,7 @@ def prep_zillow_data(df):
 
         return df
     
-    def drop_duplicate_columns(df):
+def drop_duplicate_columns(df):
         """
         Drops duplicate columns from a DataFrame.
 
@@ -101,6 +97,26 @@ def prep_zillow_data(df):
 
         return df
 
+
+
+
+def prep_zillow_data(df):
+    df = handle_missing_values(df, prop_required_column=0.5, prop_required_row=0.5)
+    df = drop_duplicate_columns(df)
+    allowed_values = [
+    'Single Family Residential',
+    'Mobile Home',
+    'Townhouse',
+    'Planned Unit Development',
+    'Manufactured',
+    'Modular',
+    'Prefabricated Home',
+    'Residential General',
+    'Cooperative'
+    ]
+
+    df = df[df['propertylandusedesc'].isin(allowed_values)]
+    
 
     return df
 #-------------------------------------------
